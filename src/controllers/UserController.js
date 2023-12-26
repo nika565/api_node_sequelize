@@ -8,7 +8,9 @@ class UserController {
 
             const novoUser = await User.create(req.body);
 
-            return res.json({ novoUser });
+            const { id, nome, email } = novoUser;
+
+            return res.json({ id, nome, email });
 
         } catch (error) {
             res.status(400).json( { errors: error.errors.map(err => err.message) } )
@@ -22,7 +24,9 @@ class UserController {
 
         try {
 
-            const users = await User.findAll();
+            const users = await User.findAll({ attributes: ['id', 'nome', 'email'] });
+            console.log('\n\nUSER ID: ', req.userId);
+            console.log('\n\nUSER E-MAIL: ', req.userEmail);
 
             return res.json(users);
             
@@ -39,7 +43,9 @@ class UserController {
 
             const user = await User.findByPk(req.params.id);
 
-            return res.json(user);
+            const { id, nome, email } = user;
+
+            return res.json({ id, nome, email });
             
         } catch (error) {
             return res.status(500).json(null);
@@ -52,16 +58,18 @@ class UserController {
 
         try {
 
-            if (!req.params.id) return res.status(404).json({errors: ['Nenhum usuário encontrado']});
+            if (!req.userId) return res.status(404).json({errors: ['Nenhum usuário encontrado']});
 
-            const user = await User.findByPk(req.params.id);
+            const user = await User.findByPk(req.userId);
             const novosDados = await user.update(req.body);
 
-            return res.json(novosDados);
+            const { id, nome, email } = novosDados;
+
+            return res.json({ id, nome, email });
             
         } catch (error) {
             console.log("\n\nDEU RUIM:", error);
-            return res.status(500).json(null);
+            return res.status(500).json( { msg: `Usuário deletado com suecsso!.` } );
         }
 
     }
@@ -71,9 +79,9 @@ class UserController {
 
         try {
 
-            if (!req.params.id) return res.status(404).json({errors: ['Nenhum usuário encontrado']});
+            if (!req.userId) return res.status(404).json({errors: ['Nenhum usuário encontrado']});
 
-            const user = await User.findByPk(req.params.id);
+            const user = await User.findByPk(req.userId);
 
             if (!user) {
                 return res.status(404).json({
