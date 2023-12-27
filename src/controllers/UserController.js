@@ -69,7 +69,7 @@ class UserController {
             
         } catch (error) {
             console.log("\n\nDEU RUIM:", error);
-            return res.status(500).json( { msg: `Usuário deletado com suecsso!.` } );
+            return res.status(500).json( { msg: `deu ruim.` } );
         }
 
     }
