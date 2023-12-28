@@ -28,7 +28,7 @@ export default {
                     1. Erro
                     2. Caminho de pastas onde vai salvar os arquivos
             */
-            cb(null, resolve(__dirname, '..', '..', 'uploads'));
+            cb(null, resolve(__dirname, '..', '..', 'uploads', 'images'));
         },
 
         filename: (req, file, cb) => {

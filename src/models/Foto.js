@@ -1,4 +1,5 @@
 import Sequelize, { Model } from "sequelize";
+import appConfig from "../config/appConfig";
 
 // Herdando as propriedades da classe Model presente no sequelize
 export default class Foto extends Model {
@@ -26,6 +27,13 @@ export default class Foto extends Model {
                     }
                 }
             },
+
+            url: {
+                type: Sequelize.VIRTUAL,
+                get() {
+                    return `${appConfig.url}/images/${this.getDataValue('filename')}`
+                }
+            }
 
         }, {
             sequelize,

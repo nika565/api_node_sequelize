@@ -1,15 +1,24 @@
-import Aluno from  '../models/Aluno';
+import Aluno from '../models/Aluno';
+import Foto from '../models/Foto'
 
 class AlunoController {
 
     async index(req, res) {
 
-        const alunos = await Aluno.findAll( { attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'] } );
+        // buscando os registros do alunos em conjunto com a tabela de fotos
+        const alunos = await Aluno.findAll({
+            attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'],
+            order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+            include: {
+                model: Foto,
+                attributes: ['filename', 'url']
+            }
+        });
 
         res.json(alunos);
     }
 
-    async store (req, res) {
+    async store(req, res) {
 
         try {
 
@@ -19,14 +28,14 @@ class AlunoController {
 
             return res.status(200).json(aluno);
 
-            
+
         } catch (error) {
             return res.status(500).json({ errors: error.errors.map(err => err.message) })
         }
 
     }
 
-    async update (req, res) {
+    async update(req, res) {
         try {
 
             if (!req.params.id) return res.status(400).json({ errors: ['Faltando o id'] });
@@ -39,31 +48,38 @@ class AlunoController {
 
             return res.status(200).json(alunoAtualizado);
 
-            
+
         } catch (error) {
             console.log(`\n\nVISH DEU RUIM PARCEIRO:`, error)
-            res.status(400).json( { errors: error.errors.map(err => err.message) } )
+            res.status(400).json({ errors: error.errors.map(err => err.message) })
         }
     }
 
-    async show (req, res) {
+    async show(req, res) {
         try {
 
             if (!req.params.id) return res.status(400).json({ errors: ['Faltando o id'] });
 
-            const aluno = await Aluno.findByPk(req.params.id);
+            const aluno = await Aluno.findByPk(req.params.id, {
+                attributes: ['id', 'nome', 'sobrenome', 'email', 'idade', 'peso', 'altura'],
+                order: [['id', 'DESC'], [Foto, 'id', 'DESC']],
+                include: {
+                    model: Foto,
+                    attributes: ['filename', 'url']
+                }
+            });
 
             if (!aluno) return res.status(404).json({ errors: ['Aluno não existe'] });
 
             return res.status(200).json(aluno);
 
-            
+
         } catch (error) {
             return res.status(500).json({ errors: error.errors.map(err => err.message) })
         }
     }
 
-    async delete (req, res) {
+    async delete(req, res) {
         try {
 
             if (!req.params.id) return res.status(400).json({ errors: ['Faltando o id'] });
@@ -73,9 +89,9 @@ class AlunoController {
             if (!aluno) return res.status(404).json({ errors: ['Aluno não existe'] });
 
             await aluno.destroy();
-            return res.status(200).json({apagado: true});
+            return res.status(200).json({ apagado: true });
 
-            
+
         } catch (error) {
             return res.status(500).json({ errors: error.errors.map(err => err.message) })
         }
